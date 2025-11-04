@@ -1,6 +1,6 @@
 # AI Market Analyst Agent
 
-A multi-functional AI agent built for the VAIA Agentic AI Residency Program. This agent ingests market research documents and performs three distinct tasks: general Q&A, market research summarization, and structured data extraction.
+A multi-functional AI agent. This agent ingests market research documents and performs three distinct tasks: general Q&A, market research summarization, and structured data extraction.
 
 ## 🎯 Features
 
