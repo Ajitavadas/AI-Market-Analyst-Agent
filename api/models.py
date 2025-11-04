@@ -8,10 +8,7 @@ class QueryRequest(BaseModel):
         default=True,
         description="Use autonomous routing"
     )
-    schema: Optional[Dict] = Field(
-        default=None,
-        description="JSON schema for extraction"
-    )
+    output_schema: Optional[Dict] = Field(default=None, description="JSON schema for extraction")
 
 class SourceDocument(BaseModel):
     """Source document model"""

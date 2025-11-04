@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from api.routes import router
+from api.routes import set_agent
 from src.agent import create_agent
 import logging
 # Configure logging
@@ -33,6 +34,7 @@ async def startup_event():
         # Create agent
         global agent
         agent = create_agent(document_text)
+        set_agent(agent)
         logger.info("Agent initialized successfully")
     except Exception as e:
         logger.error(f"Failed to initialize agent: {e}")

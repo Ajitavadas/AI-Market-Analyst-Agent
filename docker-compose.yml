@@ -1,21 +1,77 @@
 version: '3.8'
+
 services:
+  # Ollama LLM Service (FREE - runs locally)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ai-market-analyst-ollama
+    restart: unless-stopped
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    networks:
+      - analyst-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # API Service
   api:
     build: .
+    container_name: ai-market-analyst-api
+    restart: unless-stopped
     ports:
       - "8000:8000"
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - USE_LOCAL_LLM=true
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=phi:latest
+      - EMBEDDING_MODEL=nomic-embed-text:latest
+      - PYTHONUNBUFFERED=1
     volumes:
       - ./data:/app/data
       - ./chroma_db:/app/chroma_db
+      - ./src:/app/src
+      - ./api:/app/api
+    depends_on:
+      ollama:
+        condition: service_started
+    networks:
+      - analyst-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
+  # Streamlit UI
   ui:
     build: .
+    container_name: ai-market-analyst-ui
     command: streamlit run ui/app.py
+    restart: unless-stopped
     ports:
       - "8501:8501"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - API_BASE=http://api:8000
+    volumes:
+      - ./ui:/app/ui
     depends_on:
       - api
-    environment:
-      - API_BASE=http://api:8000
+    networks:
+      - analyst-network
+
+networks:
+  analyst-network:
+    driver: bridge
+
+volumes:
+  ollama_data:
+    driver: local

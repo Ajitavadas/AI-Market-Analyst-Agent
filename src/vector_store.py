@@ -10,6 +10,9 @@ from langchain.schema import Document
 from src.config import settings
 from src.embeddings import get_embedding_function
 import logging
+import os
+os.environ['CHROMA_TELEMETRY_ENABLED'] = 'false'  # Disable telemetry
+
 
 logger = logging.getLogger(__name__)
 

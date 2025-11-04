@@ -7,17 +7,20 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 # Global agent instance (initialized in main.py)
-agent: MarketAnalystAgent = None
 
+_agent: MarketAnalystAgent = None  # Use _agent (with underscore)
 
-def get_agent():
+def set_agent(agent: MarketAnalystAgent):
+    """Set the global agent instance from main.py"""
+    global _agent                           # ✅ Declare global _agent
+    _agent = agent                          # ✅ Assign to _agent
+    logger.info("✅ Agent set in routes module")
+
+def get_agent() -> MarketAnalystAgent:
     """Get the global agent instance"""
-    if agent is None:
-        raise HTTPException(
-            status_code=500,
-            detail="Agent not initialized"
-        )
-    return agent
+    if _agent is None:
+        raise HTTPException(status_code=500, detail="Agent not initialized")
+    return _agent
 
 
 @router.post("/query", response_model=QueryResponse)

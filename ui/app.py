@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import json
+import os
 
 # Configure page
 st.set_page_config(
@@ -19,7 +20,7 @@ Welcome to the AI Market Analyst Agent! This intelligent system can:
 """)
 
 # API endpoint configuration
-API_BASE = "http://localhost:8000"
+API_BASE = os.getenv("API_BASE", "http://api:8000")
 
 # Sidebar for configuration
 st.sidebar.header("Configuration")
